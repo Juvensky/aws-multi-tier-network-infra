@@ -1,6 +1,5 @@
 # aws-multi-tier-network-infra
-Implementation of a secure 3-Tier AWS VPC architecture with Public, Private App, and Private Database layers.
-1. Networking & Segmentation
+
 I designed a custom VPC with a 10.0.0.0/16 CIDR block, providing a scalable foundation. To implement the Principle of Least Privilege, I segmented the network into two distinct tiers:
 
 Public Subnet (10.0.10.0/24): Engineered for web-facing resources, associated with an Internet Gateway (IGW) via a custom Route Table.
@@ -30,15 +29,8 @@ The Route Table was correctly directing traffic.
 
 The Security Group was properly filtering ICMP requests.
 
-📸 Proof of Work
-VPC Resource Map
-(Upload your AWS Resource Map screenshot to an images folder and link it below)
-
-Successful Reachability Test
-(Upload your terminal ping screenshot here)
-
-🛠️ Deployment Steps
-VPC Setup: Created MyFreeVPC with CIDR 10.0.0.0/16.
+ Deployment Steps
+VPC Setup: Created VPC with CIDR 10.0.0.0/16.
 
 Subnetting: Defined Public (10.0.10.0/24) and Private (10.0.20.0/24) subnets.
 
