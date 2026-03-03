@@ -1,43 +1,87 @@
-# aws-multi-tier-network-infra
+# AWS VPC Network Architecture Project
 
-I designed a custom VPC with a 10.0.0.0/16 CIDR block, providing a scalable foundation. To implement the Principle of Least Privilege, I segmented the network into two distinct tiers:
+## 1. VPC Architecture Design
 
-Public Subnet (10.0.10.0/24): Engineered for web-facing resources, associated with an Internet Gateway (IGW) via a custom Route Table.
+I designed a custom VPC with a `10.0.0.0/16` CIDR block, providing a scalable and flexible networking foundation.
 
-Private Subnet (10.0.20.0/24): Isolated from the public internet to protect sensitive assets like databases. No route to the IGW exists here, ensuring a "dark" environment.
+To implement the **Principle of Least Privilege**, I segmented the network into two distinct tiers:
 
-2. Routing Logic
-The "GPS" of this project relies on custom Route Tables:
+### Public Subnet (`10.0.10.0/24`)
+- Designed for web-facing resources
+- Associated with an Internet Gateway (IGW) via a custom Route Table
+- Allows controlled inbound and outbound internet access
 
-The Public Route Table contains a 0.0.0.0/0 route pointing to the Internet Gateway.
+### Private Subnet (`10.0.20.0/24`)
+- Isolated from the public internet
+- Intended for sensitive resources such as databases
+- No route to the Internet Gateway
+- Maintains a secure "dark" environment
 
-The Private Route Table remains local-only, preventing any unsolicited inbound traffic from the web.
+---
 
-3. Security Groups (Firewalls)
-I configured a stateful Security Group for my test instance with the following rules:
+## 2. Routing Logic
 
-SSH (Port 22): Allowed for administrative access.
+The routing layer acts as the "GPS" of the architecture through custom Route Tables.
 
-ICMP (All IPv4): Enabled specifically to facilitate the "Ping" test and verify network reachability.
+### Public Route Table
+- Contains route: `0.0.0.0/0 → Internet Gateway`
+- Enables outbound internet access for public subnet resources
 
-4. Verification: The "Ping" Test
-To validate the architecture, I launched a t2.micro (Free Tier) EC2 instance into the Public Subnet. By successfully pinging the instance's Public IPv4 address from my local machine, I confirmed that:
+### Private Route Table
+- Local routing only
+- No route to Internet Gateway
+- Prevents unsolicited inbound internet traffic
 
-The Internet Gateway was correctly attached.
+---
 
-The Route Table was correctly directing traffic.
+## 3. Security Groups (Stateful Firewall)
 
-The Security Group was properly filtering ICMP requests.
+A stateful Security Group was configured for the EC2 test instance with the following rules:
 
- Deployment Steps
-VPC Setup: Created VPC with CIDR 10.0.0.0/16.
+- **SSH (Port 22)**: Allowed for administrative access
+- **ICMP (All IPv4)**: Enabled to allow ping testing and verify connectivity
 
-Subnetting: Defined Public (10.0.10.0/24) and Private (10.0.20.0/24) subnets.
+---
 
-Gateways: Created and attached an Internet Gateway.
+## 4. Verification – Connectivity Testing
 
-Routing: Configured a Public Route Table to allow outbound 0.0.0.0/0 traffic via the IGW.
+To validate the architecture:
 
-Compute: Launched an EC2 instance into the Public Subnet with a public IP.
+- Launched a `t2.micro` (AWS Free Tier) EC2 instance into the Public Subnet
+- Assigned a public IPv4 address
+- Executed a ping command from the local machine to the instance’s public IP
 
-Testing: Executed a ping command from the local terminal to verify end-to-end connectivity.
+Successful results confirmed:
+
+- Internet Gateway was correctly attached
+- Route Table was properly directing traffic
+- Security Group correctly allowed ICMP traffic
+
+---
+
+# Deployment Steps
+
+1. **VPC Setup**
+   - Created VPC with CIDR `10.0.0.0/16`
+
+2. **Subnetting**
+   - Created Public Subnet: `10.0.10.0/24`
+   - Created Private Subnet: `10.0.20.0/24`
+
+3. **Internet Gateway**
+   - Created and attached IGW to the VPC
+
+4. **Routing Configuration**
+   - Created Public Route Table
+   - Added route `0.0.0.0/0 → IGW`
+   - Associated Public Subnet with Public Route Table
+
+5. **Compute Layer**
+   - Launched EC2 instance in Public Subnet
+   - Assigned public IP address
+   - Attached configured Security Group
+
+6. **Testing**
+   - Executed `ping <public-ip>` from local terminal
+   - Verified end-to-end connectivity
+
